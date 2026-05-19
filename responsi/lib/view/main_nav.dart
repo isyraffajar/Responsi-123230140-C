@@ -64,7 +64,6 @@ class _MainNavState extends State<MainNav> {
             ProfileScreen(), 
           ],
         ),
-        // BottomNavigationBar otomatis menggunakan gaya dari bottomNavigationBarTheme di app_theme.dart
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) => setState(() => _selectedIndex = index),

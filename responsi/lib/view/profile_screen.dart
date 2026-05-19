@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login_screen.dart'; 
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,7 +10,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _namaUser = 'Pengguna'; // Nilai default 
+  String _namaUser = 'Pengguna';
 
   @override
   void initState() {
@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserData();
   }
 
-  // Mengambil nama user yang aktif dari SharedPreferences (dari proses login)
+  // Mengambil nama user yang aktif dari SharedPreferences
   Future<void> _loadUserData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? savedUser = prefs.getString('currentUser');
@@ -29,17 +29,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Fungsi untuk memproses Logout secara bersih
+  // Fungsi untuk memproses Logout
   Future<void> _handleLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    
-    // Hapus data login agar saat aplikasi dibuka lagi tidak otomatis masuk
     await prefs.remove('isLoggedIn');
     await prefs.remove('currentUser');
 
     if (!mounted) return;
-
-    // Tendang user kembali ke halaman Login dan hapus semua riwayat navigasi sebelumnya
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -47,14 +43,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Dialog konfirmasi untuk meyakinkan user sebelum logout
+  // Dialog konfirmasi
   void _showLogoutConfirmation() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Logout Akun'),
         content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
         actions: [
@@ -68,8 +62,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               foregroundColor: Colors.white,
             ),
             onPressed: () {
-              Navigator.pop(context); // Tutup dialog
-              _handleLogout(); // Jalankan fungsi logout
+              Navigator.pop(context);
+              _handleLogout();
             },
             child: const Text('Keluar'),
           ),
@@ -100,8 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-            
-            // --- SECTION FOTO & NAMA USER ---
+
             Center(
               child: Column(
                 children: [
@@ -116,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _namaUser, // Otomatis menampilkan nama sesuai input saat Login
+                    _namaUser,
                     style: teks.titleLarge?.copyWith(
                       color: const Color(0xFF0C4A6E),
                       fontWeight: FontWeight.bold,
@@ -125,47 +118,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '@${_namaUser.toLowerCase().replaceAll(' ', '')}',
-                    style: teks.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    style: teks.bodyMedium?.copyWith(color: Colors.grey[600]),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 32),
 
-            // --- SECTION DAFTAR MENU ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('AKUN'),
+                  _buildSectionTitle('Tentang Praktikum TPM'),
                   const SizedBox(height: 8),
                   _buildMenuCard(
                     children: [
                       _buildMenuItem(
-                        icon: Icons.person_outline,
+                        icon: Icons.face_outlined,
                         iconBgColor: const Color(0xFFE6F4FF),
                         iconColor: const Color(0xFF1E6FB8),
-                        title: 'Edit profil',
-                        subtitle: 'Edit nama dan foto profil',
+                        title: 'Kesan dan Pesan',
+                        subtitle: 'Matkul susah dan menantang, bisa dikerjakan tapi butuh waktu. Untung aslab nya baik-baik',
                         onTap: () {},
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-
-                  _buildSectionTitle('KEAMANAN'),
                   const SizedBox(height: 8),
+                  
                   _buildMenuCard(
                     children: [
                       _buildMenuItem(
-                        icon: Icons.lock_open_outlined,
+                        icon: Icons.feedback_outlined,
                         iconBgColor: const Color(0xFFE6F4FF),
                         iconColor: const Color(0xFF1E6FB8),
-                        title: 'Ubah password',
-                        subtitle: 'Keamanan akun',
+                        title: 'Kritik dan Saran',
+                        subtitle: 'Sudah bagus, hanya perlu ditingkatkan kualitas modul nya karena kadang saya masih agak bingung',
                         onTap: () {},
                       ),
                     ],
@@ -184,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         subtitle: 'Logout Akun',
                         titleColor: Colors.red[700],
                         showTrailing: false,
-                        onTap: _showLogoutConfirmation, // Memanggil fungsi dialog konfirmasi
+                        onTap: _showLogoutConfirmation,
                       ),
                     ],
                   ),
@@ -235,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String subtitle,
     required VoidCallback onTap,
     Color? titleColor,
-    bool showTrailing = true,
+    bool showTrailing = false,
   }) {
     return ListTile(
       onTap: onTap,
@@ -258,10 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey[500],
-        ),
+        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
       ),
       trailing: showTrailing
           ? const Icon(Icons.chevron_right, color: Colors.grey, size: 20)

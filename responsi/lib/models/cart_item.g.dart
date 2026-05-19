@@ -1,41 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'data_model.dart';
+part of 'cart_item.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class DataModelAdapter extends TypeAdapter<DataModel> {
+class CartItemAdapter extends TypeAdapter<CartItem> {
   @override
   final int typeId = 0;
 
   @override
-  DataModel read(BinaryReader reader) {
+  CartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DataModel(
-      id: fields[0] as String,
-      name: fields[1] as String,
-      released: fields[2] as String,
-      backgroundimage: fields[3] as String,
+    return CartItem(
+      username: fields[0] as String,
+      id: fields[1] as String,
+      name: fields[2] as String,
+      released: fields[3] as String,
+      imageUrl: fields[4] as String,
+      rating: fields[5] as double,
+      quantity: fields[6] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, DataModel obj) {
+  void write(BinaryWriter writer, CartItem obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(7)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.username)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.id)
       ..writeByte(2)
-      ..write(obj.released)
+      ..write(obj.name)
       ..writeByte(3)
-      ..write(obj.backgroundimage);
+      ..write(obj.released)
+      ..writeByte(4)
+      ..write(obj.imageUrl)
+      ..writeByte(5)
+      ..write(obj.rating)
+      ..writeByte(6)
+      ..write(obj.quantity);
   }
 
   @override
@@ -44,7 +53,7 @@ class DataModelAdapter extends TypeAdapter<DataModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DataModelAdapter &&
+      other is CartItemAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'detail_screen.dart';
+import 'cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _isLoading = false;
       });
-      // Menggunakan mounted check untuk menghindari error konteks jika widget sudah tidak aktif
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -63,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -71,46 +73,47 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               'Selamat Pagi,',
               style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
+                fontSize: 18,
+                color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
             ),
             Text(
               '$_username 👋',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: Color(0xFF0C4A6E),
+                color: Colors.lightBlueAccent,
               ),
             ),
           ],
         ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
-        backgroundColor: Colors.transparent,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
               icon: const Icon(
-                Icons.shopping_cart,
-                color: Color(0xFF0F4C81),
+                Icons.shopping_cart_outlined,
+                color: Colors.white,
                 size: 26,
               ),
               onPressed: () {
-                // Berpindah ke Halaman CartScreen
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const CartScreen()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CartScreen()),
+                );
               },
             ),
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF1D9E75)),
+          ? Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.secondary,
+              ),
             )
           : _products.isEmpty
           ? const Center(child: Text('Tidak ada produk yang tersedia'))
@@ -118,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
-                childAspectRatio: 0.7,
+                childAspectRatio: 1.15,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
@@ -127,96 +130,160 @@ class _HomeScreenState extends State<HomeScreen> {
                 final product = _products[index];
 
                 final String name = product['name'] ?? 'No Title';
-                final String id = product['id'] ?? 'No ID';
+                final String id = product['id']?.toString() ?? 'N/A';
                 final String released = product['released'] ?? 'N/A';
-                final String rating = product['rating'] != null
-                    ? product['rating'].toString()
+                final double? ratingRaw = product['rating']?.toDouble();
+                final String rating = ratingRaw != null
+                    ? ratingRaw.toStringAsFixed(1)
                     : 'N/A';
+
                 final String imageUrl =
                     product['background_image'] ?? product['thumbnail'] ?? '';
 
                 return GestureDetector(
                   onTap: () {
-                    // 2. AKTIFKAN NAVIGASI KE DETAIL SCREEN SAMBIL MEMBAWA DATA ARTIKEL
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DetailScreen(product: product),
+                        builder: (context) => DetailScreen(product: product),
                       ),
                     );
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    elevation: 3,
+                    elevation: 4,
+                    shadowColor: Colors.black12,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: imageUrl.isNotEmpty
-                                ? Image.network(
+                        // Gambar
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16),
+                          ),
+                          child: imageUrl.isNotEmpty
+                              ? SizedBox(
+                                  height: 140,
+                                  width: double.infinity,
+                                  child: Image.network(
                                     imageUrl,
-                                    width: double.infinity,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
-                                      return const Center(
-                                        child: Icon(
-                                          Icons.broken_image,
+                                      return Container(
+                                        height: 140,
+                                        color: Colors.grey[200],
+                                        child: const Icon(
+                                          Icons.broken_image_outlined,
                                           color: Colors.grey,
+                                          size: 40,
                                         ),
                                       );
                                     },
-                                  )
-                                : const Center(
-                                    child: Icon(
-                                      Icons.image_not_supported,
-                                      color: Colors.grey,
-                                    ),
                                   ),
-                          ),
+                                )
+                              : Container(
+                                  height: 140,
+                                  color: Colors.grey[200],
+                                  width: double.infinity,
+                                  child: const Icon(
+                                    Icons.image_not_supported_outlined,
+                                    color: Colors.grey,
+                                    size: 40,
+                                  ),
+                                ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Nama Game
+                                Text(
+                                  name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: theme.colorScheme.primary,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'ID: $id',
-                                style: const TextStyle(
-                                  color: Color(0xFF1D9E75),
-                                  fontWeight: FontWeight.bold,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.secondary
+                                            .withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+
+                                      // ID
+                                      child: Text(
+                                        'ID: $id',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                'Released: $released',
-                                style: const TextStyle(
-                                  color: Color(0xFF1D9E75),
-                                  fontWeight: FontWeight.bold,
+                                // Released Date
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_month_outlined,
+                                      size: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      released,
+                                      style: TextStyle(
+                                        color: Colors.grey[700],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                'Rating: $rating',
-                                style: const TextStyle(
-                                  color: Color(0xFF1D9E75),
-                                  fontWeight: FontWeight.bold,
+                                const Divider(height: 8),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amber,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      rating,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      ' / 5.0',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
