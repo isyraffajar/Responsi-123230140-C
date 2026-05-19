@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
 
-  final String nim = '123230140';
+  final String nim = '140';
 
   void _handleLogin() async {
     final String username = _usernameCtrl.text.trim();
@@ -25,7 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if(username.length < 5) {
+      _showError('Username minimal harus 5 karakter');
+      return;
+    }
+
     if (password == nim) {
+      
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
       await prefs.setString('currentUser', username);
@@ -36,8 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const MainNav()),
       );
     } else {
-      _showError('Password salah! Password wajib menggunakan NIM Anda.');
+      _showError('Password salah! Password wajib menggunakan 3 digit NIM Anda.');
     }
+
   }
 
   void _showError(String message) {
@@ -46,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         backgroundColor: const Color(
           0xFF0C4A6E,
-        ), // SnackBar disesuaikan ke warna Dark Navy
+        ), 
         content: Text(message, style: const TextStyle(color: Colors.white)),
       ),
     );
@@ -59,13 +66,11 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // Di dalam method build milik LoginScreen...
   @override
   Widget build(BuildContext context) {
     final teks = Theme.of(context).textTheme;
 
     return Scaffold(
-      // backgroundColor otomatis mengikuti tema global (extraLightBlue)
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -77,35 +82,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
-                      // Mengambil warna primary dari tema induk (#0F4C81)
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                    // decoration: BoxDecoration(
+                    //   color: Theme.of(context).colorScheme.primary,
+                    //   borderRadius: BorderRadius.circular(20),
+                    // ),
                     child: const Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white,
-                      size: 40,
+                      Icons.gamepad,
+                      color: Color.fromARGB(255, 28, 79, 123),
+                      size: 100,
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'TokoStore',
+                  'My Game Store',
                   style: teks.headlineMedium?.copyWith(
                     color: const Color(
                       0xFF0C4A6E,
-                    ), // Bisa di-override jika butuh spesifik
+                    ), 
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
-                Text('Beli apa aja disini!', textAlign: TextAlign.center),
+                Text('Pusat game terlengkap!', textAlign: TextAlign.center),
                 const SizedBox(height: 40),
 
-                // TextField otomatis memiliki background putih, border melengkung,
-                // dan warna fokus biru tanpa perlu menulis properti 'decoration' yang panjang lagi.
                 TextField(
                   controller: _usernameCtrl,
                   decoration: const InputDecoration(
@@ -114,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 TextField(
                   controller: _passwordCtrl,
                   obscureText: _obscurePassword,
@@ -133,7 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // ElevatedButton otomatis berwarna Deep Blue dengan text putih dan radius 12
                 ElevatedButton(
                   onPressed: _handleLogin,
                   child: const Text('Masuk'),
